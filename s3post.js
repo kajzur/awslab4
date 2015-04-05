@@ -12,16 +12,18 @@ var Policy = function(policyData){
 	console.log("policyData " + util.inspect(policyData, false, null));	
 }
 
-Policy.prototype.generateEncodedPolicyDocument = function(){
-	return helpers.encode(this.policy, 'base64');		
+Policy.prototype.generateEncodedPolicyDocument = function(ip){
+	return helpers.encode(this.policy, 'base64', function(string){
+		return string.replace("$ip", ip);
+	});		
 }
 
 Policy.prototype.getConditions = function(){
 	return this.policy.conditions;
 }
 
-Policy.prototype.generateSignature = function(secretAccessKey){
-	return helpers.hmac("sha1", secretAccessKey, this.generateEncodedPolicyDocument(), 'base64');	
+Policy.prototype.generateSignature = function(secretAccessKey, ip){
+	return helpers.hmac("sha1", secretAccessKey, this.generateEncodedPolicyDocument(ip), 'base64');	
 }
 
 Policy.prototype.getConditionValueByKey = function(key){
@@ -43,9 +45,9 @@ var S3Form = function(policy){
 	
 }
 
-S3Form.prototype.generateS3FormFields = function() {
+S3Form.prototype.generateS3FormFields = function(ip) {
 	var conditions =this.policy.getConditions();
-	
+	console.log(ip);
 	var formFields = [];
 
 	conditions.forEach(function(elem){
@@ -56,7 +58,9 @@ S3Form.prototype.generateS3FormFields = function() {
 
 			var key = Object.keys(elem)[0];
 			var value = elem[key];
-			if(key !== "bucket")
+			if(key === "x-amz-meta-ip") 
+				formFields.push(hiddenField(key, value.replace("$ip",ip)));
+			else if(key !== "bucket")
 			 	formFields.push(hiddenField(key, value));
 		}	
 	});
@@ -66,15 +70,15 @@ S3Form.prototype.generateS3FormFields = function() {
 
 
 
-S3Form.prototype.addS3CredientalsFields = function(fields, awsConfig){	
+S3Form.prototype.addS3CredientalsFields = function(fields, awsConfig, ip){	
 	fields.push(hiddenField(
 		ACCESS_KEY_FIELD_NAME, awsConfig.accessKeyId));
 
 	fields.push(hiddenField(
-		POLICY_FIELD_NAME, this.policy.generateEncodedPolicyDocument()));
+		POLICY_FIELD_NAME, this.policy.generateEncodedPolicyDocument(ip)));
 
 	fields.push(hiddenField(
-		SIGNATURE_FIELD_NAME, this.policy.generateSignature(awsConfig.secretAccessKey)));
+		SIGNATURE_FIELD_NAME, this.policy.generateSignature(awsConfig.secretAccessKey, ip)));
 	return fields;
 }
 

@@ -1,0 +1,44 @@
+<html>
+	<head>
+		<link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css" rel="stylesheet">	
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />	
+		<meta http-equiv="refresh" content="3;url=<%=url%>" />
+	</head>
+	<body>
+		<nav class="navbar">
+			
+		</nav>
+		<div class="container">
+		<section id="section1" class="panel panel-default">
+<!-- <iframe id="frame" style="display:none" src="<%=url%>"></iframe> -->
+			<div class="panel-heading">
+			<div class="container">
+	    		<h3 class="panel-title">Info</h3>
+	    		</div>
+		  	</div>
+	  		<div class="panel-body">
+	  			<h3>MetaData<small>&nbsp;&nbsp;&nbsp;&nbsp;Pobieranie rozpocznie się w ciągu 3 sekund</small></h3>
+	  			<% for(a in meta) { %>
+	  				<%= a  %>: <%=meta[a] %><br>
+				<%}; %> 
+				<br>
+				Key: <%=key%>
+				<br>
+				<h3>Funkcje skrótu</h3>
+				<% for(val in hashes) { %>
+	  				<%=hashes[val] %><br>
+				<%}; %> 
+	  		</div>
+			<footer class="panel-footer">
+				
+			</footer>
+		</section>
+	</div>		
+	<script type="text/javascript">
+			// setTimeout(function(){
+			// 	var url = "<%=url%>".replace("amp;","");
+			// 	window.location.replace(url);
+			// },2000);
+	</script>
+	</body>
+</html>

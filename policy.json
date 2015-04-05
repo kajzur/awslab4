@@ -1,8 +1,10 @@
 {	"expiration" : {"day":1},
-	"conditions": [ ["starts-with", "$key", "mateusz.mazurek"],
+	"conditions": [ ["starts-with", "$key", "mateusz.mazurek/"],
     				 {"bucket": "lab4-weeia"}, 
     				 {"acl": "private"},
-    				 {"success_action_redirect": "http:\\localhost:8080\info"},   
-    				 ["content-length-range", 0, 1048576]
+    				 {"success_action_redirect": "http://localhost:8080/info"},   
+    				 ["content-length-range", 0, 1048576],
+    				 {"x-amz-meta-name":"Mateusz Mazurek"},
+    				 {"x-amz-meta-ip":"Adres: $ip"}
     				]   
 }

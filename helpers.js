@@ -81,8 +81,9 @@ var hmac = function(algorithm, key, text, encoding) {
 	return hmac.update(new Buffer(text)).digest(encoding);
 }
 
-var encode = function(obj, encoding) {
+var encode = function(obj, encoding, templateFunction) {
 	var stringifyObj = JSON.stringify(obj);	
+	stringifyObj = templateFunction(stringifyObj);
 	return new Buffer(stringifyObj).toString(encoding);
 }
 
