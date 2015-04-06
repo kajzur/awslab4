@@ -1,7 +1,5 @@
 var helpers = require("../helpers");
 var AWS = require("aws-sdk");
-var fs = require('fs');
-var mime = require('mime');
 AWS.config.loadFromPath('./config.json');
 
 exports.action = function(request, callback) {
