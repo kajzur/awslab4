@@ -5,8 +5,10 @@ var S3Form = require("../s3post").S3Form;
 var AWS_CONFIG_FILE = "config.json";
 var POLICY_FILE = "policy.json";
 var INDEX_TEMPLATE = "index.ejs";
-
+var AWS = require("aws-sdk");
+AWS.config.loadFromPath(AWS_CONFIG_FILE);
 var getIP = require('external-ip')();
+
 var task = function(request, callback){
 	//1. load configuration
 	var awsConfig = helpers.readJSONFile(AWS_CONFIG_FILE);
@@ -23,6 +25,24 @@ var task = function(request, callback){
 	        throw err;
 	    }
     	var fields = s3Form.generateS3FormFields(ip);
+
+    	var simpledb = new AWS.SimpleDB();
+		var dbParams = {
+		  Attributes: [ /* required */
+		    {
+		      Name: 'datetime', /* required */
+		      Value: Math.round(+new Date()/1000)+"", /* required */
+		      Replace: false
+		    }
+		  ],
+		  DomainName: 'mateuszmDomain', /* required */
+		  ItemName: 'formViews' /* required */
+		};
+		simpledb.putAttributes(dbParams, function(err, data) {
+		  if (err) console.log(err, err.stack); // an error occurred
+		  else     console.log(data);           // successful response
+		});
+
 
 		callback(null, {template: INDEX_TEMPLATE, params:{fields:s3Form.addS3CredientalsFields(fields, awsConfig, ip) , bucket:"lab4-weeia"}});
 	});
